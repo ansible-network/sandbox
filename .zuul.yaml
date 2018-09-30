@@ -5,3 +5,9 @@
     gate:
       jobs:
         - tox-docs
+    post:
+      jobs:
+        - tox-docs
+    release:
+      jobs:
+        - tox-docs
