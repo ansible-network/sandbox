@@ -1,10 +1,6 @@
 - project:
-    check:
-      jobs:
-        - tox-docs
-    gate:
-      jobs:
-        - tox-docs
+    templates:
+      - build-tox-docs
     post:
       jobs:
         - tox-docs
