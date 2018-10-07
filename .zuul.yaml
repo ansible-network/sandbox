@@ -3,7 +3,4 @@
       - build-tox-docs
     post:
       jobs:
-        - tox-docs
-    release:
-      jobs:
-        - tox-docs
+        - release-ansible-role
