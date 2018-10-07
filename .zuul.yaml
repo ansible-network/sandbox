@@ -1,6 +1,3 @@
 - project:
     templates:
       - build-tox-docs
-    post:
-      jobs:
-        - release-ansible-role
