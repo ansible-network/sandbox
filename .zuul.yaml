@@ -1,6 +1,13 @@
+- job:
+    name: dco
+    run: playbooks/dco/run.yaml
+
 - project:
     templates:
       - build-tox-docs
+    check:
+      jobs:
+        - dco
     post:
       jobs:
         - tox-docs
