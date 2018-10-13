@@ -1,6 +1,13 @@
+- job:
+    name: dco-license-check
+    run: playbooks/dco/run.yaml
+
 - project:
     templates:
       - build-tox-docs
+    check:
+      jobs:
+        - dco-license-check
     post:
       jobs:
         - tox-docs
