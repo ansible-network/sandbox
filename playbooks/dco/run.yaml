@@ -1,20 +1,33 @@
 - hosts: all
   tasks:
-    - name: chell
-      shell: git remote -v
-      args:
+    - name: Developer Certificate of Origin (DCO) license check
+      shell:
+        cmd: |
+          set -e
+          result=0
+          for commit in $(git cherry -v origin/{{ zuul.branch }} HEAD | cut -d " " -f2)
+          do
+            if ! git show -s $commit | grep -q "Signed-off-by:"; then
+              echo "---"
+              git show -s $commit
+              echo "---"
+              echo "does not have a Signed-off-by header"
+              result=1
+            fi
+          done
+          exit $result
         chdir: "{{ zuul.project.src_dir }}"
+        executable: /bin/bash
+      register: _dco
+      failed_when: _dco.rc > 1
 
-    - name: chell
-      shell: git log origin/master..HEAD
-      args:
-        chdir: "{{ zuul.project.src_dir }}"
+    - name: License check failed
+      fail:
+        msg: |
+          One or more commits have not been signed properly using --signoff.
 
-    - name: shell
-      shell: |
-        for commit in $(git cherry master | cut -d " " -f2)
-        do
-            echo $commit
-        done
-      args:
-        chdir: "{{ zuul.project.src_dir }}"
+          The meaning of a signoff depends on the project, but it typically
+          certifies that committer has the rights to submit this work under
+          the same license and agrees to a Developer Certificate of Origin
+          (see http://developercertificate.org/ for more information).
+      when: _dco.rc != 0
