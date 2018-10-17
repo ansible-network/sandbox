@@ -1,0 +1,5 @@
+name: "ansible-network.sandbox"
+version: "0.0.20"
+description: "Example sanbox role for testing things"
+authors: ["Ansible Network Contributors"]
+license: "GPL-3.0-or-later"

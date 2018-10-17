@@ -1,6 +1,9 @@
 - project:
     templates:
       - build-tox-docs
+    check:
+      jobs:
+        - build-ansible-role-tarball
     post:
       jobs:
         - tox-docs
