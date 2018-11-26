@@ -1,6 +1,15 @@
+- job:
+    name: test-ssh
+    pre-run: playbooks/pre.yaml
+    run: playbooks/run.yaml
+
+
 - project:
     templates:
       - build-tox-docs
+    check:
+      jobs:
+        - test-ssh
     post:
       jobs:
         - tox-docs

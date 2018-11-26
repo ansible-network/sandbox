@@ -1,0 +1,5 @@
+- hosts: all
+  tasks:
+    - name: Add bridge to inventory
+      add_host:
+        name: 147.75.50.187
