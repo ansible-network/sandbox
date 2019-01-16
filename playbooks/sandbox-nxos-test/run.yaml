@@ -1,0 +1,4 @@
+- hosts: fedora-latest
+  tasks:
+    - name: hello
+      shell: echo world
