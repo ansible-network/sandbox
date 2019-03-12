@@ -1,6 +1,19 @@
+- job:
+    name: sandbox-nxos-test
+    run: playbooks/sandbox-nxos-test/run.yaml
+    nodeset:
+      nodes:
+        - name: fedora-latest
+          label: dib-fedora-29-minimal
+        - name: applicance
+          label: ansible-network-nxos
+
 - project:
     templates:
       - build-tox-docs
+    check:
+      jobs:
+        - sandbox-nxos-test
     post:
       jobs:
         - tox-docs
