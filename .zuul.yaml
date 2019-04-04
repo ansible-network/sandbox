@@ -1,6 +1,0 @@
-- project:
-    templates:
-      - build-tox-docs
-    post:
-      jobs:
-        - tox-docs
