@@ -1,0 +1,42 @@
+- job:
+    name: awx-tox-base
+    parent: tox
+    pre-run: playbooks/awx-tox-base/pre.yaml
+    required-projects:
+      - name: github.com/ansible/awx
+    vars:
+      zuul_work_dir: ~/src/github.com/ansible/awx
+    nodeset: fedora-latest-1vcpu
+
+- job:
+    name: awx-tox-linters-api
+    parent: awx-tox-base
+    vars:
+      tox_envlist: api-lint
+
+- job:
+    name: awx-tox-linters-ui
+    parent: awx-tox-base
+    vars:
+      tox_envlist: ui-lint
+
+- job:
+    name: awx-tox-api
+    parent: awx-tox-base
+    timeout: 3600
+    vars:
+      tox_envlist: api
+
+- job:
+    name: awx-tox-ui
+    parent: awx-tox-base
+    vars:
+      tox_envlist: ui
+
+- project:
+    check:
+      jobs:
+        - awx-tox-api
+        - awx-tox-ui
+        - awx-tox-linters-api
+        - awx-tox-linters-ui
