@@ -4,6 +4,7 @@
     pre-run: playbooks/awx-tox-base/pre.yaml
     required-projects:
       - name: github.com/ansible/awx
+        override-checkout: ansible-zuul
     vars:
       zuul_work_dir: ~/src/github.com/ansible/awx
     nodeset: fedora-latest-1vcpu
