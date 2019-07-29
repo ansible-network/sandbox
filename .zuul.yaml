@@ -1,0 +1,5 @@
+- project:
+    check:
+      jobs:
+        - ansible-test-network-integration-eos-python35
+        - ansible-test-sanity
