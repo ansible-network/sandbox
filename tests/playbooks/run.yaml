@@ -1,0 +1,29 @@
+- hosts: all
+  tasks:
+    - name: Run metal3 development environment - step 01
+      args:
+        chdir: "{{ zuul.projects['github.com/metal3-io/metal3-dev-env'].src_dir }}"
+        executable: /bin/bash
+      shell: ./01_install_requirements.sh
+
+    - name: Run metal3 development environment - step 02
+      args:
+        chdir: "{{ zuul.projects['github.com/metal3-io/metal3-dev-env'].src_dir }}"
+        executable: /bin/bash
+      shell: ./02_configure_host.sh
+
+    - name: Run metal3 development environment - step 03
+      args:
+        chdir: "{{ zuul.projects['github.com/metal3-io/metal3-dev-env'].src_dir }}"
+        executable: /bin/bash
+      shell: ./03_launch_mgmt_cluster.sh
+
+    - name: Run metal3 development environment - step 04
+      args:
+        chdir: "{{ zuul.projects['github.com/metal3-io/metal3-dev-env'].src_dir }}"
+        executable: /bin/bash
+      delay: 300
+      register: result
+      retries: 5
+      shell: ./04_verify.sh
+      until: result is succeeded

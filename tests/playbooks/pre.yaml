@@ -1,0 +1,29 @@
+- hosts: all
+  tasks:
+    - name: Enable EPEL
+      become: true
+      shell: yum-config-manager --enable epel
+
+    - name: Enable nested virt for kvm
+      become: true
+      shell: "echo 'options kvm_intel nested=1' >> /etc/modprobe.d/kvm.conf"
+
+    - name: Install kvm-qemu
+      become: true
+      package:
+        name: qemu-kvm
+        state: installed
+
+    - name: Verify nested virt is enabled
+      shell: cat /sys/module/kvm_intel/parameters/nested
+
+    - name: Unload KVM module
+      become: true
+      shell: modprobe -r kvm_intel
+
+    - name: Reload KVM with the nested feature enabled
+      become: true
+      shell: modprobe kvm_intel nested=1
+
+    - name: Verify nested virt is enabled
+      shell: cat /sys/module/kvm_intel/parameters/nested
