@@ -1,0 +1,4 @@
+- project:
+    post:
+      jobs:
+        - release-ansible-galaxy-collection
