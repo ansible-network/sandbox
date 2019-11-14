@@ -1,0 +1,8 @@
+---
+authors:
+  - Ansible Network Community (ansible-network)
+license_file: LICENSE
+name: sandbox
+namespace: network
+readme: README.rst
+repository: https://github.com/ansible-network/sandbox
