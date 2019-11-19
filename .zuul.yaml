@@ -1,0 +1,10 @@
+- project:
+    post:
+      jobs:
+        - release-ansible-collection-galaxy-dev
+    pre-rlease:
+      jobs:
+        - release-ansible-collection-galaxy-dev
+    release:
+      jobs:
+        - release-ansible-collection-galaxy-dev
