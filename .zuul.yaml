@@ -1,4 +1,27 @@
+- nodeset:
+    name: vmware
+    nodes:
+      - name: ubuntu-bionic
+        label: ubuntu-bionic-1vcpu
+      - name: esxi
+        label: esxi-6.7.0
+    groups:
+      - name: appliance
+        nodes:
+          - esxi
+      - name: controller
+        nodes:
+          - ubuntu-bionic
+
+- job:
+    name: exsi-sandbox
+    run: playbooks/run
+    nodeset: vmware
+
 - project:
+    check:
+      jobs:
+        - exsi-sandbox
     post:
       jobs:
         - release-ansible-collection-galaxy-dev

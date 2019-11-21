@@ -1,0 +1,4 @@
+- hosts: controller
+  tasks:
+    - name: hello world
+      shell: echo hello world
