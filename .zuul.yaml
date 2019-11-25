@@ -3,12 +3,15 @@
     nodes:
       - name: ubuntu-bionic
         label: ubuntu-bionic-1vcpu
-      - name: vmware-vsca
+      - name: vcenter
         label: vmware-vcsa-6.7.0
+      - name: esxi1
+        label: esxi-6.7.0
     groups:
       - name: appliance
         nodes:
-          - vmware-vsca
+          - vcenter
+          - esxi1
       - name: controller
         nodes:
           - ubuntu-bionic
