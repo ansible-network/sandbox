@@ -1,4 +1,19 @@
+- job:
+    name: build-ansible-collections
+    description: |
+      Build ansible collections
+    pre-run: playbooks/build-ansible-collections/pre.yaml
+    run: playbooks/build-ansible-collections/run.yaml
+    post-run:
+      - playbooks/build-ansible-collections/post.yaml
+    required-projects:
+      - github.com/ansible-network/releases
+    nodeset: centos-8-1vcpu
+
 - project:
+    check:
+      jobs:
+        - build-ansible-collections
     post:
       jobs:
         - release-ansible-collection-galaxy-dev
