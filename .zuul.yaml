@@ -1,4 +1,19 @@
+- job:
+    name: test-sandbox
+    run: playbooks/run.yaml
+    nodeset: centos-8-1vcpu
+    vars:
+      download_artifact_directory: ~/downloads
+      download_artifact_type:
+        - ansible_collection
+
 - project:
+    check:
+      jobs:
+        - build-ansible-collection
+        - test-sandbox:
+            dependencies:
+              - build-ansible-collection
     post:
       jobs:
         - release-ansible-collection-galaxy-dev
