@@ -1,0 +1,5 @@
+- hosts: all
+  tasks:
+    - name: download ansible collections
+      include_role:
+        name: download-artifact
