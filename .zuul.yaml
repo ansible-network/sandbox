@@ -1,10 +1,24 @@
+- nodeset:
+    name: vmware
+    nodes:
+      - name: centos-8
+        label: centos-8-1vcpu
+      - name: vmware-esxi
+        label: esxi-6.7.0
+    groups:
+      - name: appliance
+        nodes:
+          - vmware-esxi
+      - name: controller
+        nodes:
+          - centos-8
+
+- job:
+    name: exsi-sandbox
+    run: playbooks/run.yaml
+    nodeset: vmware
+
 - project:
-    post:
+    check:
       jobs:
-        - release-ansible-collection-galaxy-dev
-    pre-rlease:
-      jobs:
-        - release-ansible-collection-galaxy-dev
-    release:
-      jobs:
-        - release-ansible-collection-galaxy-dev
+        - exsi-sandbox  
