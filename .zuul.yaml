@@ -1,10 +1,24 @@
+- nodeset:
+    name: nxos-python27
+    nodes:
+      - name: ubuntu-bionic
+        label: ubuntu-bionic-rdocloud
+      - name: nxos-7.0.3
+        label: nxos-7.0.3
+    groups:
+      - name: appliance
+        nodes:
+          - nxos-7.0.3
+      - name: controller
+        nodes:
+          - ubuntu-bionic
+
+- job:
+    name: testing-nxos
+    run: playbooks/run.yaml
+    nodeset: nxos-python27
+
 - project:
-    post:
+    check:
       jobs:
-        - release-ansible-collection-galaxy-dev
-    pre-rlease:
-      jobs:
-        - release-ansible-collection-galaxy-dev
-    release:
-      jobs:
-        - release-ansible-collection-galaxy-dev
+        - testing-nxos
