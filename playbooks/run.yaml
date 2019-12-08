@@ -1,0 +1,126 @@
+- hosts: all
+  tasks:
+    - name: Executor install-docker role
+      include_role:
+        name: install-docker
+      vars:
+        use_upstream_docker: true
+
+    - name: Ensure dependencies are installed
+      become: true
+      package:
+        name:
+          - docker-compose
+          - python-pexpect
+        state: installed
+
+    - name: Build docker containers
+      shell: make dev/build
+      args:
+        chdir: "{{ zuul.projects['github.com/ansible/galaxy'].src_dir }}"
+        executable: /bin/bash
+
+    - name: Run docker-compose up
+      shell: make dev/up_detached
+      args:
+        chdir: "{{ zuul.projects['github.com/ansible/galaxy'].src_dir }}"
+        executable: /bin/bash
+
+    - name: Print list of images
+      command: docker image ls --all --digests --no-trunc
+
+    - name: Wait for galaxy to start
+      uri:
+        url: http://localhost:8000
+      register: result
+      until: result.status == 200 and result.redirected == false
+      retries: 120
+
+    - name: Create admin user
+      expect:
+        chdir: "{{ zuul.projects['github.com/ansible/galaxy'].src_dir }}"
+        command: make dev/createsuperuser
+        echo: true
+        responses:
+          'Username:': admin
+          'Email address:': admin@example.org
+          'Password:': secret
+          'Password \(again\):': secret
+        timeout: 60
+
+    - name: Create admin token
+      args:
+        chdir: "{{ zuul.projects['github.com/ansible/galaxy'].src_dir }}"
+        executable: /bin/bash
+      shell: make USERNAME=admin dev/createusertoken | tail -n1 | cut -d ' ' -f3
+      register: _token
+
+    - name: Create ansible.cfg configuration file
+      copy:
+        content: |
+          [galaxy]
+          server_list = buildset_galaxy
+
+          [galaxy_server.buildset_galaxy]
+          url = http://localhost:8000
+          token = {{ _token.stdout }}
+        dest: /tmp/galaxy.cfg
+        mode: 0600
+
+    - name: Create network namespace
+      args:
+        chdir: "{{ zuul.projects['github.com/ansible/galaxy'].src_dir }}"
+        executable: /bin/bash
+      shell: make USERNAME=admin NAMESPACE=network dev/createnamespace
+
+    - name: Confirm namespace exists
+      uri:
+        url: http://localhost:8000/api/v1/namespaces/?name=network
+      register: result
+      until: result.status == 200
+      retries: 120
+
+    - name: Assert namespace exists
+      assert:
+        that:
+          - result.json.count != 0
+
+    - name: Setup tox role
+      include_role:
+        name: tox
+      vars:
+        tox_extra_args: -vv --notest
+        tox_install_siblings: false
+        zuul_work_dir: "{{ zuul.projects['github.com/ansible-network/releases'].src_dir }}"
+
+    - name: Generate version number for ansible collection.
+      args:
+        chdir: "{{ zuul.project.src_dir }}"
+      command: "{{ ansible_user_dir }}/{{ zuul.projects['github.com/ansible-network/releases'].src_dir }}/.tox/venv/bin/generate-ansible-collection"
+
+    - name: Run build-ansible-collection role
+      include_role:
+        name: build-ansible-collection
+      vars:
+        ansible_galaxy_output_path: ~/artifacts
+        ansible_galaxy_executable: "{{ ansible_user_dir }}/{{ zuul.projects['github.com/ansible-network/releases'].src_dir }}/.tox/venv/bin/ansible-galaxy"
+
+    - name: Find tarballs to upload
+      find:
+        paths: ~/artifacts
+        patterns: "*.tar.gz"
+      register: found_tarballs
+
+    - name: Publish collection to Ansible Galaxy
+      environment:
+        ANSIBLE_CONFIG: /tmp/galaxy.cfg
+      shell: "{{ ansible_user_dir }}/{{ zuul.projects['github.com/ansible-network/releases'].src_dir }}/.tox/venv/bin/ansible-galaxy -vvv collection publish {{ item.path }}"
+      register: result
+      until: result.rc == 0
+      with_items: "{{ found_tarballs.files }}"
+
+    - zuul_return:
+        data:
+          zuul:
+            pause: true
+          registry_ip_address: "{{ hostvars[groups.all[0]].ansible_host }}"

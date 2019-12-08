@@ -1,10 +1,20 @@
+- job:
+    name: galaxy-quick-start
+    run: playbooks/run.yaml
+    required-projects:
+      - name: github.com/ansible/galaxy
+      - name: github.com/ansible-network/releases
+    nodeset: centos-8-1vcpu
+
+- job:
+    name: galaxy-quick-start-child
+    dependencies:
+      - name: galaxy-quick-start
+    run: playbooks/child.yaml
+    nodeset: centos-8-1vcpu
+
 - project:
-    post:
+    check:
       jobs:
-        - release-ansible-collection-galaxy-dev
-    pre-rlease:
-      jobs:
-        - release-ansible-collection-galaxy-dev
-    release:
-      jobs:
-        - release-ansible-collection-galaxy-dev
+        - galaxy-quick-start
+        - galaxy-quick-start-child
