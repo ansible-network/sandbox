@@ -1,0 +1,6 @@
+---
+- hosts: all
+  tasks:
+    - name: Setup ensure-kubernetes role
+      include_role:
+        name: ensure-kubernetes
