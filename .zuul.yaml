@@ -1,4 +1,14 @@
+- job:
+    name: builder-test
+    run: playbooks/run.yaml
+    required-projects:
+      - github.com/ansible/ansible-builder
+    nodeset: ubuntu-bionic-1vcpu
+
 - project:
+    check:
+      jobs:
+        - builder-test
     pre-rlease:
       jobs:
         - release-ansible-python
