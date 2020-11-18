@@ -1,4 +1,7 @@
 - project:
+    check:
+      jobs:
+        - ansible-galaxy-build-container-image
     pre-rlease:
       jobs:
         - release-ansible-python
