@@ -1,4 +1,7 @@
 - project:
+    lgtm:
+      jobs:
+        - noop
     pre-rlease:
       jobs:
         - release-ansible-python
