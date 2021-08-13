@@ -1,4 +1,7 @@
 - project:
+    check:
+      jobs:
+        - ansible-tox-linters
     lgtm:
       jobs:
         - noop
