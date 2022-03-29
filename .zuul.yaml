@@ -1,3 +1,10 @@
+- job:
+    name: builder-test
+    run: playbooks/run.yaml
+    required-projects:
+      - github.com/ansible/ansible-builder
+    nodeset: ubuntu-bionic-4vcpu
+
 - project:
     lgtm:
       jobs:
